@@ -83,9 +83,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
 
       {/* Main Top Navigation Styled like the Reference Design */}
       <header className="sticky top-0 z-40 bg-[#1D0D2E]/95 backdrop-blur-md border-b border-purple-900/40 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 min-h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-8">
           {/* Zone 1: Logo Icon + Brand Wordmark: LUMSIC */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
             <button
               onClick={() => handleNav('home')}
               className="flex items-center gap-2.5 text-left group"
@@ -109,7 +109,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
               </div>
 
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold tracking-wider font-sans text-white group-hover:text-[#F7CA50] transition-colors">
+                <span className="text-xl sm:text-2xl font-bold tracking-wider font-sans text-white group-hover:text-[#F7CA50] transition-colors">
                   LUMSIC
                 </span>
               </div>
@@ -214,7 +214,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
           </nav>
 
           {/* Zone 3: Language Selector + Golden Pill Login Button */}
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-4 shrink-0 min-w-0">
             {/* Language Selector */}
             <div className="relative hidden sm:block">
               <button
@@ -357,7 +357,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
             {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg"
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}\n              aria-expanded={mobileMenuOpen}\n              className="md:hidden min-w-11 min-h-11 p-2 text-white hover:bg-white/10 rounded-lg shrink-0"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -366,7 +366,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
 
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-purple-900/40 bg-[#1D0D2E] px-4 py-3 space-y-2 text-sm font-medium text-purple-100">
+          <div className="md:hidden border-t border-purple-900/40 bg-[#1D0D2E] px-4 py-3 space-y-2 text-sm font-medium text-purple-100 max-h-[calc(100dvh-64px)] overflow-y-auto">
             <button onClick={() => handleNav('explore')} className="block w-full text-left py-2 hover:text-[#F7CA50]">
               Chat With Psychic
             </button>
