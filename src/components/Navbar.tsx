@@ -357,7 +357,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
             {/* Mobile menu trigger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}\n              aria-expanded={mobileMenuOpen}\n              className="md:hidden min-w-11 min-h-11 p-2 text-white hover:bg-white/10 rounded-lg shrink-0"
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={mobileMenuOpen}\n              className="md:hidden min-w-11 min-h-11 p-2 text-white hover:bg-white/10 rounded-lg shrink-0"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
