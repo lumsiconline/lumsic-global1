@@ -59,6 +59,8 @@ import {
   Video,
   Upload,
   Camera,
+  Menu,
+  X,
 } from 'lucide-react';
 
 interface AdminDashboardProps {
@@ -93,6 +95,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('overview');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dateRange, setDateRange] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -721,9 +724,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       )}
 
       {/* Admin Top Header */}
-      <header className="bg-[#2D1B34] text-white border-b border-[#38243F] sticky top-0 z-30 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-md">
+      <header className="bg-[#2D1B34] text-white border-b border-[#38243F] sticky top-0 z-30 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 shadow-md">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#9B4D96] to-[#D4AF37] flex items-center justify-center text-white font-bold text-lg shadow-inner">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-white hover:bg-white/10 rounded-lg min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
+            aria-label="Toggle modules navigation"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#9B4D96] to-[#D4AF37] flex items-center justify-center text-white font-bold text-lg shadow-inner shrink-0">
             L
           </div>
           <div>
@@ -733,19 +743,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 Admin Center
               </span>
             </div>
-            <p className="text-xs text-[#F2EADF]/70">Global Astrology & Consultation Management Hub</p>
+            <p className="text-xs text-[#F2EADF]/70 hidden sm:block">Global Astrology & Consultation Management Hub</p>
           </div>
         </div>
 
         {/* Quick Date Range Filter & Realtime Controls */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center bg-[#38243F] border border-[#FAF7F2]/10 rounded-lg p-1 text-xs">
-            <span className="px-2 text-[#F2EADF]/60">Range:</span>
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div className="flex items-center bg-[#38243F] border border-[#FAF7F2]/10 rounded-lg p-1 text-xs overflow-x-auto scrollbar-none">
+            <span className="px-1.5 sm:px-2 text-[#F2EADF]/60 hidden xs:inline">Range:</span>
             {(['all', 'today', '7d', '30d', 'month'] as const).map(rangeKey => (
               <button
                 key={rangeKey}
                 onClick={() => setDateRange(rangeKey)}
-                className={`px-2.5 py-1 rounded transition-colors uppercase font-medium ${
+                className={`px-2 sm:px-2.5 py-1 rounded transition-colors uppercase font-medium text-[11px] min-h-[30px] flex items-center ${
                   dateRange === rangeKey
                     ? 'bg-[#9B4D96] text-white shadow-sm'
                     : 'text-[#F2EADF]/70 hover:text-white'
@@ -759,25 +769,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <button
             onClick={loadData}
             disabled={isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF7F2]/10 hover:bg-[#FAF7F2]/20 text-xs font-medium text-[#F2EADF] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FAF7F2]/10 hover:bg-[#FAF7F2]/20 text-xs font-medium text-[#F2EADF] transition-colors min-h-[36px]"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>Sync</span>
+            <span className="hidden sm:inline">Sync</span>
           </button>
 
-          <div className="h-6 w-px bg-white/10" />
+          <div className="h-6 w-px bg-white/10 hidden sm:block" />
 
           <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[#F2EADF]/80">System Live</span>
+            <span className="text-[#F2EADF]/80 hidden sm:inline">System Live</span>
           </div>
         </div>
       </header>
 
       {/* Main Container: Sidebar + Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* 19-Section Sidebar */}
-        <aside className="w-64 bg-white border-r border-[#E8DFC8] flex flex-col shrink-0 overflow-y-auto">
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Mobile Backdrop */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/60 z-30 lg:hidden backdrop-blur-xs"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* 19-Section Sidebar (Drawer on mobile, static on desktop) */}
+        <aside
+          className={`fixed inset-y-16 left-0 z-40 w-64 bg-white border-r border-[#E8DFC8] flex flex-col shrink-0 overflow-y-auto transform transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+            mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+          }`}
+        >
           <div className="p-3 border-b border-[#F2EADF] bg-[#FAF7F2]/50">
             <p className="text-[11px] font-semibold text-[#8B7898] uppercase tracking-wider px-2">
               Platform Modules (19)
@@ -789,8 +811,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-all ${
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-all min-h-[40px] ${
                     isActive
                       ? 'bg-[#38243F] text-white shadow-sm font-semibold'
                       : 'text-[#38243F]/80 hover:bg-[#FAF7F2] hover:text-[#38243F]'
@@ -825,7 +850,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </aside>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto p-6 bg-[#FAF7F2]">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#FAF7F2]">
           {/* SECTION 1: OVERVIEW & KPIS */}
           {activeSection === 'overview' && (
             <div className="space-y-6">

@@ -490,10 +490,10 @@ export const ZodiacCompatibilityCalculator: React.FC<ZodiacCompatibilityCalculat
   return (
     <div className={`w-full text-center ${className}`}>
       {/* 1. Header Pill matching image_ff974ad1.png */}
-      <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#FCECEE] border border-[#F6D0D8] text-[#8C2C47] text-xs font-bold tracking-wider uppercase mb-3 shadow-2xs">
-        <span className="text-sm">💖</span>
-        <span>ZODIAC SYNERGY &amp; SOULMATE CALCULATOR</span>
-        <span className="text-sm">✨</span>
+      <div className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full bg-[#FCECEE] border border-[#F6D0D8] text-[#8C2C47] text-[10px] sm:text-xs font-bold tracking-wider uppercase mb-3 shadow-2xs max-w-[94%]">
+        <span className="text-xs sm:text-sm shrink-0">💖</span>
+        <span className="truncate">ZODIAC SYNERGY &amp; SOULMATE CALCULATOR</span>
+        <span className="text-xs sm:text-sm shrink-0">✨</span>
       </div>
 
       {/* 2. Main Title */}

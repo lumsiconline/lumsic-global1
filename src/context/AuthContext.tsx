@@ -78,7 +78,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (role === 'admin') {
         await login('admin@lumsic.com', 'Admin123!');
       } else if (role === 'astrologer') {
-        await login('devrat@lumsic.com', 'Astro123!');
+        try {
+          await login('nikee@lumsic.com', 'Astro123!');
+        } catch {
+          await login('devrat@lumsic.com', 'Astro123!');
+        }
       } else {
         await login('sarah.jenkins@example.com', 'Customer123!');
       }

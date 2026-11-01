@@ -141,17 +141,17 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ onBack, onOpenAddMoney }) =>
   return (
     <div className="max-w-5xl mx-auto px-4 py-4 sm:py-6">
       {/* Top Header bar */}
-      <div className="bg-[#FAF7F2] rounded-t-2xl border border-b-0 border-[#38243F]/10 px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 shadow-xs">
-        <div className="flex items-center gap-3">
+      <div className="bg-[#FAF7F2] rounded-t-2xl border border-b-0 border-[#38243F]/10 px-3.5 sm:px-6 py-3 sm:py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <button
             onClick={onBack}
-            className="p-1.5 text-gray-500 hover:text-[#38243F] hover:bg-white rounded-lg transition-colors"
+            className="p-2 text-gray-500 hover:text-[#38243F] hover:bg-white rounded-xl transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             title="Back to dashboard"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
 
-          <div className="relative">
+          <div className="relative shrink-0">
             <img
               src={activeSession.readerAvatar || '/src/assets/images/reader_vedic_astrologer_1793513362018.jpg'}
               alt={activeSession.readerName}
@@ -160,16 +160,16 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ onBack, onOpenAddMoney }) =>
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
           </div>
 
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-serif font-bold text-[#38243F]">
+              <h3 className="text-sm font-serif font-bold text-[#38243F] truncate">
                 {isCustomer ? activeSession.readerName : activeSession.customerName}
               </h3>
-              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 bg-[#38243F]/5 text-[#38243F] rounded">
+              <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 bg-[#38243F]/5 text-[#38243F] rounded shrink-0">
                 {activeSession.astrologerId}
               </span>
             </div>
-            <div className="text-[11px] text-gray-500 flex items-center gap-1.5">
+            <div className="text-[11px] text-gray-500 flex items-center gap-1.5 truncate">
               <span>Session: {activeSession.sessionNumber}</span>
               <span>·</span>
               <span className="text-emerald-700 font-medium">${activeSession.pricePerMinute.toFixed(2)}/min</span>
@@ -178,8 +178,8 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ onBack, onOpenAddMoney }) =>
         </div>
 
         {/* Live Timer & End Button */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 text-xs">
+        <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-3 w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-200/60">
+          <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 text-xs shadow-2xs">
             <Clock className="w-3.5 h-3.5 text-[#C6A66B] animate-pulse" />
             <span className="font-mono font-bold text-gray-800">{timeFormatted}</span>
             <span className="text-gray-300">|</span>
@@ -188,7 +188,7 @@ export const ChatRoom: React.FC<ChatRoomProps> = ({ onBack, onOpenAddMoney }) =>
 
           <button
             onClick={() => setShowEndModal(true)}
-            className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+            className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-colors shadow-xs min-h-[40px]"
           >
             <PhoneOff className="w-3.5 h-3.5" />
             <span>End Session</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Reader } from '../types';
 import { api } from '../lib/api';
 import { ZodiacCompatibilityCalculator } from '../components/ZodiacCompatibilityCalculator';
@@ -262,6 +262,13 @@ const DEFAULT_PSYCHICS: Reader[] = [
   },
 ];
 
+const LOVE_HERO_QUESTIONS = [
+  'Do they miss you?',
+  'Are they still in love?',
+  'Will they come back? Is it really over?',
+  'Will they regret losing you?',
+];
+
 interface HomePageProps {
   onSelectReader: (reader: Reader) => void;
   onExplore: () => void;
@@ -280,6 +287,20 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [selectedConcern, setSelectedConcern] = useState<string>('Love');
   const [selectedCardIndex, setSelectedCardIndex] = useState<number>(2); // Center card active
   const [onlineCount, setOnlineCount] = useState<number>(438);
+  const [questionIndex, setQuestionIndex] = useState<number>(0);
+  const [isQuestionFading, setIsQuestionFading] = useState<boolean>(false);
+
+  // Shuffle love questions every 3 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIsQuestionFading(true);
+      setTimeout(() => {
+        setQuestionIndex(prev => (prev + 1) % LOVE_HERO_QUESTIONS.length);
+        setIsQuestionFading(false);
+      }, 200);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     api.readers.list().then(list => {
@@ -406,49 +427,91 @@ export const HomePage: React.FC<HomePageProps> = ({
   });
   const displayMatchedReaders = matchedReaders.length > 0 ? matchedReaders.slice(0, 3) : (allReaders.length > 0 ? allReaders.slice(0, 3) : featuredReaders);
 
+  // Love specialists prioritized at top/beginning of list
+  const prioritizedChatReaders = useMemo(() => {
+    const isLoveSpecialist = (reader: Reader) => {
+      const textToSearch = [
+        ...reader.specializations,
+        reader.title,
+        reader.bio,
+      ].join(' ').toLowerCase();
+      return (
+        textToSearch.includes('love') ||
+        textToSearch.includes('relationship') ||
+        textToSearch.includes('soulmate') ||
+        textToSearch.includes('twin flame') ||
+        textToSearch.includes('heart') ||
+        textToSearch.includes('marriage')
+      );
+    };
+
+    const list = allReaders.length > 0 ? allReaders : featuredReaders;
+    return [...list].sort((a, b) => {
+      const aLove = isLoveSpecialist(a);
+      const bLove = isLoveSpecialist(b);
+      if (aLove && !bLove) return -1;
+      if (!aLove && bLove) return 1;
+      return 0;
+    });
+  }, [allReaders, featuredReaders]);
+
   return (
-    <div className="pb-20 bg-[#160822] text-[#FAF7F2]">
-      {/* HERO SECTION MATCHING REFERENCE DESIGN */}
-      <section className="relative overflow-hidden pt-10 pb-8 lg:pt-14 lg:pb-12 bg-gradient-to-b from-[#1D0D2E] via-[#241038] to-[#160822]">
+    <div className="pb-20 bg-[#160822] text-[#FAF7F2] flex flex-col">
+      {/* 1ST SECTION: HERO SECTION (Compact on mobile view) */}
+      <section className="order-1 relative overflow-hidden pt-4 pb-4 sm:pt-10 sm:pb-8 lg:pt-14 lg:pb-12 bg-gradient-to-b from-[#1D0D2E] via-[#241038] to-[#160822]">
         {/* Mystic ambient background glow */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-[#F7CA50]/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
             {/* Left Column: Headline, Copy, Action Buttons & Live Stats */}
-            <div className="lg:col-span-7 space-y-7 text-left">
+            <div className="lg:col-span-7 space-y-3.5 sm:space-y-7 text-left">
               {/* Main Headline with Tagline */}
-              <div className="space-y-2">
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif text-white tracking-tight leading-[1.12]">
+              <div className="space-y-1 sm:space-y-2">
+                <h1 className="text-2xl xs:text-3xl sm:text-5xl lg:text-7xl font-serif text-white tracking-tight leading-[1.12]">
                   Where Hearts Seek Answers, <br />
                   <span className="italic font-normal text-[#F7CA50]">and Love Finds Its Way.</span>
                 </h1>
-                <p className="text-sm sm:text-base font-serif italic text-[#F7CA50] font-normal pt-1">
+                <p className="text-xs sm:text-base font-serif italic text-[#F7CA50] font-normal pt-0.5 sm:pt-1">
                   Find Clarity in Love, Life &amp; Relationships.
                 </p>
               </div>
 
               {/* Subhead text */}
-              <p className="text-sm sm:text-base text-purple-200/90 leading-relaxed max-w-xl">
+              <p className="text-xs sm:text-base text-purple-200/90 leading-snug sm:leading-relaxed max-w-xl">
                 Connect with gifted psychics, tarot readers, and spiritual advisors worldwide. Get the guidance you seek, wherever you are.
               </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-1">
-                {/* Yellow/Gold Primary Pill Button */}
+              {/* Action Buttons: Yellow Question Shuffler Button (Rotates every 2s) + Secondary Action */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5 pt-0.5 sm:pt-1 w-full max-w-xl">
+                {/* Yellow/Gold Primary Pill Button with Shuffled Love Questions every 2 seconds */}
                 <button
                   onClick={onExplore}
-                  className="px-7 py-3.5 bg-[#F7CA50] hover:bg-[#F5BF38] text-[#1B0C27] font-bold text-sm rounded-full shadow-[0_0_25px_rgba(247,202,80,0.35)] transition-all hover:scale-105 flex items-center gap-2 group cursor-pointer"
+                  type="button"
+                  className="w-full sm:w-auto flex-1 px-4 sm:px-5 py-2.5 sm:py-3 bg-[#F7CA50] hover:bg-[#F5BF38] text-[#1B0C27] font-bold text-xs sm:text-sm rounded-full shadow-[0_0_25px_rgba(247,202,80,0.4)] transition-all hover:scale-[1.01] active:scale-[0.98] flex items-center justify-between gap-2.5 cursor-pointer min-h-[42px] sm:min-h-[46px] group border border-[#FFD972]"
                 >
-                  <MessageSquare className="w-4 h-4 text-[#1B0C27] fill-[#1B0C27]" />
-                  <span>Start Free Chat</span>
+                  <div className="flex items-center gap-2 min-w-0 flex-1 text-left">
+                    <Heart className="w-4 h-4 text-[#1B0C27] fill-[#1B0C27] shrink-0 animate-pulse" />
+                    <span
+                      className={`font-extrabold text-xs sm:text-sm text-[#1B0C27] tracking-tight truncate transition-all duration-200 transform ${
+                        isQuestionFading ? 'opacity-0 -translate-y-1' : 'opacity-100 translate-y-0'
+                      }`}
+                    >
+                      {LOVE_HERO_QUESTIONS[questionIndex]}
+                    </span>
+                  </div>
+
+                  <span className="shrink-0 flex items-center gap-1 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-[#1B0C27] text-[#F7CA50] px-2.5 py-1 rounded-full shadow-2xs group-hover:bg-[#2F1545] transition-colors">
+                    <span>Ask for Free</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
                 </button>
 
                 {/* Translucent Outlined Pill Button */}
                 <button
                   onClick={() => setCurrentView('how-it-works')}
-                  className="px-6 py-3.5 bg-white/10 hover:bg-white/15 text-white border border-white/20 text-sm font-semibold rounded-full flex items-center gap-2 transition-all cursor-pointer backdrop-blur-xs"
+                  className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white/10 hover:bg-white/15 text-white border border-white/20 text-xs sm:text-sm font-semibold rounded-full flex items-center justify-center gap-1.5 transition-all cursor-pointer backdrop-blur-xs min-h-[40px] sm:min-h-[46px] shrink-0"
                 >
                   <Sparkles className="w-4 h-4 text-[#F7CA50]" />
                   <span>How It Works</span>
@@ -456,18 +519,18 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
 
               {/* Live KPI / Trust Status Row with rotating online count */}
-              <div className="pt-8 border-t border-purple-900/50 flex flex-wrap items-center gap-6 sm:gap-10 text-left">
+              <div className="pt-3.5 sm:pt-8 border-t border-purple-900/50 flex flex-wrap items-center gap-4 sm:gap-10 text-left">
                 {/* 1. Online indicator with rotating number between 300 and 600 */}
-                <div className="flex items-center gap-3">
-                  <span className="relative flex h-3 w-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-emerald-500" />
                   </span>
                   <div>
-                    <div className="font-bold text-white text-sm tabular-nums transition-all duration-500">
+                    <div className="font-bold text-white text-xs sm:text-sm tabular-nums transition-all duration-500">
                       {onlineCount} online now
                     </div>
-                    <div className="text-[11px] text-purple-300/70">Avg wait &lt; 30s</div>
+                    <div className="text-[10px] sm:text-[11px] text-purple-300/70">Avg wait &lt; 30s</div>
                   </div>
                 </div>
 
@@ -475,21 +538,21 @@ export const HomePage: React.FC<HomePageProps> = ({
 
                 {/* 2. Rating & Reviews */}
                 <div>
-                  <div className="flex items-center gap-1.5 text-sm font-bold text-white">
+                  <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-bold text-white">
                     <div className="flex gap-0.5 text-[#F7CA50]">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3.5 h-3.5 fill-[#F7CA50]" />
+                        <Star key={i} className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-[#F7CA50]" />
                       ))}
                     </div>
                     <span className="tabular-nums">4.9</span>
                   </div>
-                  <div className="text-[11px] text-purple-300/70">5,000+ verified reviews</div>
+                  <div className="text-[10px] sm:text-[11px] text-purple-300/70">5,000+ verified reviews</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Luminous Tarot Card Fan & Mystic Orb */}
-            <div className="lg:col-span-5 relative flex items-center justify-center min-h-[460px] select-none">
+            {/* Right Column: Luminous Tarot Card Fan & Mystic Orb (Hidden on mobile, displayed on desktop) */}
+            <div className="hidden lg:flex lg:col-span-5 relative items-center justify-center min-h-[460px] select-none overflow-visible w-full py-2 scale-100 origin-center">
               {/* Mystic Center Glowing Sphere */}
               <div className="absolute z-0 w-64 h-64 rounded-full bg-gradient-to-tr from-purple-950 via-[#4A176B] to-[#7E29B3] opacity-80 blur-lg shadow-[0_0_80px_rgba(168,85,247,0.4)] flex items-center justify-center">
                 <div className="w-40 h-40 rounded-full border border-purple-400/30 animate-pulse" />
@@ -621,8 +684,8 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* SECOND SECTION: TRUST STRIP & COMPACT CONCERN MATCHING (image_5d6654a9.png) */}
-      <section className="bg-[#FAF7F2] text-[#29252D] py-10 sm:py-12 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
+      {/* SECTION: TRUST STRIP & COMPACT CONCERN MATCHING (image_5d6654a9.png) */}
+      <section className="order-3 lg:order-2 bg-[#FAF7F2] text-[#29252D] py-10 sm:py-12 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
         <div className="max-w-6xl mx-auto space-y-9">
           {/* Trust Guarantees Strip */}
           <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-stone-200/90">
@@ -807,32 +870,40 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 3RD SECTION: CHAT WITH PSYCHIC (image_feae37c2.png) */}
-      <section className="bg-[#FAF7F2] py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
+      {/* SECTION: CHAT WITH PSYCHIC (order-2 on mobile, order-3 on desktop) */}
+      <section className="order-2 lg:order-3 bg-[#FAF7F2] py-5 sm:py-10 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
         <div className="max-w-7xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center">
+          {/* Stylish Section Header with Compact Spacing & Love Subheadline */}
+          <div className="text-center space-y-1.5 mb-3 sm:mb-5">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-[#2A153B] tracking-tight">
               Chat with Psychic
             </h2>
 
-            {/* Emblem Decorative Divider matching image_feae37c2.png */}
-            <div className="relative flex items-center justify-center my-6 max-w-xl mx-auto">
-              <div className="w-full border-t border-purple-200/80" />
-              <div className="absolute px-3 bg-[#FAF7F2]">
-                <div className="w-8 h-8 rounded-full bg-[#200A33] border border-[#F7CA50]/70 flex items-center justify-center text-[#F7CA50] shadow-sm">
-                  <Eye className="w-4 h-4 text-[#F7CA50]" />
+            {/* Sub-headline: Best in love readings with heart icon */}
+            <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm font-medium text-rose-800">
+              <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500 shrink-0" />
+              <span className="font-serif italic font-semibold tracking-wide">
+                Best in love readings
+              </span>
+            </div>
+
+            {/* Stylish Sleek Emblem Decorative Divider (compact) */}
+            <div className="relative flex items-center justify-center pt-2 max-w-xs mx-auto">
+              <div className="w-full border-t border-purple-200/70" />
+              <div className="absolute px-2.5 bg-[#FAF7F2]">
+                <div className="w-6 h-6 rounded-full bg-[#200A33] border border-[#F7CA50]/70 flex items-center justify-center text-[#F7CA50] shadow-xs">
+                  <Eye className="w-3.5 h-3.5 text-[#F7CA50]" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 10 Advisor Cards Grid (2 rows of 5 on desktop) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4.5 pt-2">
-            {featuredReaders.slice(0, 10).map(reader => (
+          {/* 10 Advisor Cards: Horizontal touch scrollable left-to-right on mobile, responsive grid on desktop */}
+          <div className="flex sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4.5 pt-2 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+            {prioritizedChatReaders.slice(0, 10).map(reader => (
               <div
                 key={reader.id}
-                className="bg-white rounded-3xl p-3 sm:p-3.5 border border-stone-200/90 hover:border-purple-300 shadow-xs hover:shadow-md transition-all flex flex-col justify-between text-center relative group"
+                className="shrink-0 w-[170px] xs:w-[185px] sm:w-auto snap-start bg-white rounded-3xl p-3 sm:p-3.5 border border-stone-200/90 hover:border-purple-300 shadow-xs hover:shadow-md transition-all flex flex-col justify-between text-center relative group"
               >
                 <div>
                   {/* Photo with subtle top-rounded frame and soft gradient background */}
@@ -921,15 +992,15 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 4TH SECTION: LOVE & ZODIAC COMPATIBILITY CALCULATOR (image_ff974ad1.png) */}
-      <section id="love-calculator" className="bg-[#FAF7F2] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
+      {/* SECTION: LOVE & ZODIAC COMPATIBILITY CALCULATOR (image_ff974ad1.png) */}
+      <section id="love-calculator" className="order-4 bg-[#FAF7F2] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
         <ZodiacCompatibilityCalculator
           onChatWithLovePsychics={onExplore}
         />
       </section>
 
-      {/* 5TH SECTION: COMPACT VERIFIED REVIEWS ON CREAM BACKGROUND */}
-      <section className="bg-[#FAF7F2] py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
+      {/* SECTION: COMPACT VERIFIED REVIEWS ON CREAM BACKGROUND */}
+      <section className="order-5 bg-[#FAF7F2] py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-b border-stone-200">
         <div className="max-w-6xl mx-auto space-y-7">
           {/* Compact Header */}
           <div className="text-center space-y-1.5">

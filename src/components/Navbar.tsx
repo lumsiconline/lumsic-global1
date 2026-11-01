@@ -40,18 +40,21 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
   return (
     <>
       {/* Evaluator Quick Switcher Strip */}
-      <div className="bg-[#12071A] text-[#FAF7F2] text-xs py-1 px-4 border-b border-purple-900/40">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-[#F7CA50] font-medium tracking-wide uppercase text-[11px]">Role Switcher:</span>
-            <span className="text-purple-300/60 hidden sm:inline">Test multi-role workflows:</span>
+      <div className="bg-[#12071A] text-[#FAF7F2] text-xs py-1.5 px-3 sm:px-4 border-b border-purple-900/40 overflow-x-auto scrollbar-none">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 min-w-max">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[#F7CA50] font-semibold tracking-wider uppercase text-[10px] sm:text-[11px] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F7CA50] animate-pulse" />
+              Role Switcher:
+            </span>
+            <span className="text-purple-300/60 hidden md:inline text-[11px]">Instant live test:</span>
           </div>
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => switchUser('customer')}
-              className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all min-h-[32px] flex items-center ${
                 user?.role === 'customer'
-                  ? 'bg-[#F7CA50] text-[#1B0C27] font-semibold'
+                  ? 'bg-[#F7CA50] text-[#1B0C27] shadow-sm'
                   : 'bg-white/10 hover:bg-white/20 text-[#FAF7F2]'
               }`}
             >
@@ -59,19 +62,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
             </button>
             <button
               onClick={() => switchUser('astrologer')}
-              className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all min-h-[32px] flex items-center ${
                 user?.role === 'astrologer'
-                  ? 'bg-[#F7CA50] text-[#1B0C27] font-semibold'
+                  ? 'bg-[#F7CA50] text-[#1B0C27] shadow-sm'
                   : 'bg-white/10 hover:bg-white/20 text-[#FAF7F2]'
               }`}
             >
-              Astrologer (LUM001 Devrat)
+              Astrologer (Nikee)
             </button>
             <button
               onClick={() => switchUser('admin')}
-              className={`px-2 py-0.5 rounded text-[11px] transition-colors ${
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all min-h-[32px] flex items-center ${
                 user?.role === 'admin'
-                  ? 'bg-[#F7CA50] text-[#1B0C27] font-semibold'
+                  ? 'bg-[#F7CA50] text-[#1B0C27] shadow-sm'
                   : 'bg-white/10 hover:bg-white/20 text-[#FAF7F2]'
               }`}
             >
@@ -83,7 +86,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
 
       {/* Main Top Navigation Styled like the Reference Design */}
       <header className="sticky top-0 z-40 bg-[#1D0D2E]/95 backdrop-blur-md border-b border-purple-900/40 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-20 flex items-center justify-between gap-4 sm:gap-8">
           {/* Zone 1: Logo Icon + Brand Wordmark: LUMSIC */}
           <div className="flex items-center gap-3 shrink-0">
             <button
@@ -242,13 +245,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
               )}
             </div>
 
+            {/* Zone 3: Desktop Actions vs Mobile Drawer */}
             {user ? (
-              <div className="flex items-center gap-2 sm:gap-3">
-                {/* Active Chat Shortcut */}
+              <div className="flex items-center gap-1.5 sm:gap-3">
+                {/* Active Chat Shortcut - always visible if active */}
                 {activeSession && (
                   <button
                     onClick={() => handleNav(user.role === 'customer' ? 'customer-chat' : 'astrologer-chat')}
-                    className="relative flex items-center gap-1.5 px-3 py-1.5 bg-[#F7CA50] text-[#1B0C27] text-xs font-bold rounded-full hover:bg-[#F7CA50]/90 transition-colors whitespace-nowrap shadow-sm"
+                    className="relative flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#F7CA50] text-[#1B0C27] text-xs font-bold rounded-full hover:bg-[#F7CA50]/90 transition-colors whitespace-nowrap shadow-sm min-h-[36px]"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Active Chat</span>
@@ -256,11 +260,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
                   </button>
                 )}
 
-                {/* Customer Wallet */}
+                {/* Customer Wallet - visible on sm+ screens */}
                 {user.role === 'customer' && (
                   <button
                     onClick={onOpenWalletModal}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 text-white hover:bg-white/15 text-xs font-medium rounded-full border border-purple-500/40 transition-colors whitespace-nowrap"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-white/10 text-white hover:bg-white/15 text-xs font-medium rounded-full border border-purple-500/40 transition-colors whitespace-nowrap min-h-[36px]"
                     title="Open Wallet"
                   >
                     <Wallet className="w-3.5 h-3.5 text-[#F7CA50]" />
@@ -268,11 +272,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
                   </button>
                 )}
 
-                {/* Notifications trigger */}
-                <div className="relative">
+                {/* Notifications trigger - desktop */}
+                <div className="relative hidden md:block">
                   <button
                     onClick={() => setShowNotifications(!showNotifications)}
-                    className="p-2 text-purple-200 hover:text-white hover:bg-white/10 rounded-full transition-colors relative"
+                    className="p-2 text-purple-200 hover:text-white hover:bg-white/10 rounded-full transition-colors relative min-h-[44px] min-w-[44px] flex items-center justify-center"
                     title="Notifications"
                   >
                     <Bell className="w-4 h-4" />
@@ -320,14 +324,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
                   )}
                 </div>
 
-                {/* Dashboard button */}
+                {/* Dashboard button - desktop */}
                 <button
                   onClick={() => {
                     if (user.role === 'admin') handleNav('admin');
                     else if (user.role === 'astrologer') handleNav('astrologer-dashboard');
                     else handleNav('customer-dashboard');
                   }}
-                  className="px-4 py-2 bg-gradient-to-r from-[#F7CA50] to-[#E9BC45] text-[#1B0C27] text-xs font-bold rounded-full hover:brightness-105 transition-all shadow-md whitespace-nowrap"
+                  className="hidden md:flex px-4 py-2 bg-gradient-to-r from-[#F7CA50] to-[#E9BC45] text-[#1B0C27] text-xs font-bold rounded-full hover:brightness-105 transition-all shadow-md whitespace-nowrap min-h-[36px] items-center"
                 >
                   {user.role === 'admin'
                     ? 'Admin Portal'
@@ -336,10 +340,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
                     : 'Dashboard'}
                 </button>
 
-                {/* Logout Button */}
+                {/* Logout Button - desktop */}
                 <button
                   onClick={logout}
-                  className="p-2 text-purple-300 hover:text-red-400 hover:bg-white/10 rounded-full transition-colors"
+                  className="hidden md:flex p-2 text-purple-300 hover:text-red-400 hover:bg-white/10 rounded-full transition-colors min-h-[44px] min-w-[44px] items-center justify-center"
                   title="Sign Out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -348,47 +352,138 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView, onO
             ) : (
               <button
                 onClick={() => handleNav('login')}
-                className="px-6 py-2.5 bg-[#F7CA50] hover:bg-[#F5BF38] text-[#1B0C27] text-xs font-bold rounded-full shadow-[0_0_20px_rgba(247,202,80,0.35)] transition-all hover:scale-105 whitespace-nowrap"
+                className="px-5 sm:px-6 py-2 sm:py-2.5 bg-[#F7CA50] hover:bg-[#F5BF38] text-[#1B0C27] text-xs font-bold rounded-full shadow-[0_0_20px_rgba(247,202,80,0.35)] transition-all hover:scale-105 whitespace-nowrap min-h-[40px]"
               >
                 Login
               </button>
             )}
 
-            {/* Mobile menu trigger */}
+            {/* Mobile menu trigger button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-white hover:bg-white/10 rounded-lg"
+              className="md:hidden p-2 text-white hover:bg-white/10 rounded-xl min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors relative"
+              aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {user && unreadCount > 0 && !mobileMenuOpen && (
+                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-[#F7CA50] rounded-full ring-2 ring-[#1D0D2E]" />
+              )}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu dropdown */}
+        {/* Mobile menu dropdown drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-purple-900/40 bg-[#1D0D2E] px-4 py-3 space-y-2 text-sm font-medium text-purple-100">
-            <button onClick={() => handleNav('explore')} className="block w-full text-left py-2 hover:text-[#F7CA50]">
-              Chat With Psychic
-            </button>
-            <button onClick={() => handleNav('compatibility')} className="block w-full text-left py-2 hover:text-[#F7CA50] text-[#F7CA50] font-semibold">
-              💖 Love &amp; Zodiac Calculator
-            </button>
-            <button onClick={() => handleNav('how-it-works')} className="block w-full text-left py-2 hover:text-[#F7CA50]">
-              How It Works
-            </button>
-            <button onClick={() => handleNav('about')} className="block w-full text-left py-2 hover:text-[#F7CA50]">
-              About LUMSIC
-            </button>
-            <button onClick={() => handleNav('contact')} className="block w-full text-left py-2 hover:text-[#F7CA50]">
-              Support &amp; Contact
-            </button>
+          <div className="md:hidden border-t border-purple-900/40 bg-[#1A0A2A] px-4 py-4 space-y-3 text-sm font-medium text-purple-100 shadow-2xl animate-in slide-in-from-top-2 duration-200">
+            {/* User Profile Card on Mobile */}
+            {user && (
+              <div className="p-3 bg-purple-950/60 rounded-xl border border-purple-800/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-white font-bold text-sm">{user.fullName}</div>
+                    <div className="text-xs text-purple-300/80 font-mono">{user.email}</div>
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#F7CA50] text-[#1B0C27]">
+                    {user.role}
+                  </span>
+                </div>
+
+                {/* Prominent Dashboard Button */}
+                <button
+                  onClick={() => handleNav(user.role === 'admin' ? 'admin' : user.role === 'astrologer' ? 'astrologer-dashboard' : 'customer-dashboard')}
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-[#F7CA50] to-[#E9BC45] text-[#1B0C27] font-bold text-xs rounded-xl shadow-md text-center flex items-center justify-center gap-2 min-h-[44px]"
+                >
+                  <Eye className="w-4 h-4" />
+                  <span>
+                    Open {user.role === 'admin' ? 'Admin Ops Portal' : user.role === 'astrologer' ? 'Astrologer Studio' : 'My Seeker Dashboard'}
+                  </span>
+                </button>
+
+                {/* Mobile Wallet Shortcut */}
+                {user.role === 'customer' && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenWalletModal();
+                    }}
+                    className="w-full py-2 px-3 bg-white/10 hover:bg-white/15 text-white text-xs font-semibold rounded-lg flex items-center justify-between border border-purple-700/50 min-h-[44px]"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Wallet className="w-4 h-4 text-[#F7CA50]" />
+                      <span>Wallet &amp; Balance</span>
+                    </span>
+                    <span className="text-[#F7CA50] font-bold">Top Up &rarr;</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Links */}
+            <div className="space-y-1 pt-1">
+              <button
+                onClick={() => handleNav('explore')}
+                className="w-full text-left py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-[#F7CA50] flex items-center justify-between min-h-[44px]"
+              >
+                <span>Chat With Psychic</span>
+                <span className="text-xs text-[#F7CA50] font-medium">Browse &rarr;</span>
+              </button>
+              <button
+                onClick={() => handleNav('compatibility')}
+                className="w-full text-left py-2.5 px-3 rounded-lg hover:bg-white/5 text-[#F7CA50] font-semibold flex items-center justify-between min-h-[44px]"
+              >
+                <span>💖 Love &amp; Zodiac Calculator</span>
+                <span className="text-[10px] bg-rose-950/80 text-rose-300 border border-rose-800/80 px-2 py-0.5 rounded-full">Popular</span>
+              </button>
+              <button
+                onClick={() => handleNav('how-it-works')}
+                className="w-full text-left py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-[#F7CA50] min-h-[44px] flex items-center"
+              >
+                How It Works
+              </button>
+              <button
+                onClick={() => handleNav('about')}
+                className="w-full text-left py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-[#F7CA50] min-h-[44px] flex items-center"
+              >
+                About LUMSIC
+              </button>
+              <button
+                onClick={() => handleNav('contact')}
+                className="w-full text-left py-2.5 px-3 rounded-lg hover:bg-white/5 hover:text-[#F7CA50] min-h-[44px] flex items-center"
+              >
+                Support &amp; Contact
+              </button>
+            </div>
+
+            {/* Language Selection on Mobile */}
+            <div className="pt-2 border-t border-purple-900/60 flex items-center justify-between">
+              <span className="text-xs text-purple-300/70">Language:</span>
+              <div className="flex items-center gap-1">
+                {['ENG', 'ESP', 'FRA', 'HIN'].map(l => (
+                  <button
+                    key={l}
+                    onClick={() => setSelectedLang(l)}
+                    className={`px-2 py-1 text-xs rounded font-medium transition-colors ${
+                      selectedLang === l ? 'bg-[#F7CA50] text-[#1B0C27] font-bold' : 'text-purple-200 hover:bg-white/10'
+                    }`}
+                  >
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Sign Out */}
             {user && (
               <div className="pt-2 border-t border-purple-900/60">
                 <button
-                  onClick={() => handleNav(user.role === 'admin' ? 'admin' : user.role === 'astrologer' ? 'astrologer-dashboard' : 'customer-dashboard')}
-                  className="block w-full text-left py-2 font-bold text-[#F7CA50]"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="w-full py-2.5 px-3 rounded-lg text-rose-300 hover:bg-rose-950/40 text-xs font-semibold flex items-center justify-center gap-2 min-h-[44px] border border-rose-900/40"
                 >
-                  Go to Dashboard
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out of LUMSIC</span>
                 </button>
               </div>
             )}

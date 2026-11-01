@@ -82,11 +82,11 @@ export const StartConsultationModal: React.FC<StartConsultationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-      <div className="bg-[#FAF7F2] text-[#29252D] rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#38243F]/10 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs">
+      <div className="bg-[#FAF7F2] text-[#29252D] rounded-2xl max-w-lg w-full max-h-[92vh] overflow-y-auto p-5 sm:p-8 shadow-2xl border border-[#38243F]/10 relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-700 rounded-full"
+          className="absolute top-3 sm:top-4 right-3 sm:right-4 p-2 text-gray-400 hover:text-gray-700 rounded-full min-h-[44px] min-w-[44px] flex items-center justify-center"
         >
           <X className="w-5 h-5" />
         </button>

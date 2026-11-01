@@ -308,6 +308,19 @@ const INITIAL_USERS = [
     createdAt: '2026-01-10T00:00:00.000Z',
   },
   {
+    id: 'usr-devrat',
+    email: 'devrat@lumsic.com',
+    passwordHash: 'Astro123!',
+    fullName: 'Psychic Nikee',
+    phone: '+1 310 555 0182',
+    country: 'US',
+    currency: 'USD',
+    timezone: 'America/New_York',
+    role: 'astrologer',
+    astrologerId: 'LUM001',
+    createdAt: '2026-01-10T00:00:00.000Z',
+  },
+  {
     id: 'usr-veronica',
     email: 'veronica@lumsic.com',
     passwordHash: 'Astro123!',
@@ -891,7 +904,12 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
 
-  const user = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  const normalizedEmail = email.toLowerCase().trim();
+  const user = db.users.find(u =>
+    u.email.toLowerCase() === normalizedEmail ||
+    (normalizedEmail === 'devrat@lumsic.com' && (u.email.toLowerCase() === 'nikee@lumsic.com' || u.id === 'usr-nikee')) ||
+    (normalizedEmail === 'nikee@lumsic.com' && (u.email.toLowerCase() === 'devrat@lumsic.com' || u.id === 'usr-nikee'))
+  );
   if (!user || user.passwordHash !== password) {
     return res.status(401).json({ error: 'Invalid email or password.' });
   }
