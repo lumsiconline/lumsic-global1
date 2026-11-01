@@ -1,0 +1,6 @@
+{
+  "name": "LUMSIC Global Astrology Platform",
+  "description": "Where Hearts Seek Answers, and Love Finds Its Way. Production-ready international astrology, tarot, and psychic consultation platform with verified readers and real-time chat sessions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
